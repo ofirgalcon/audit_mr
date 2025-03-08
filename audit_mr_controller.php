@@ -21,6 +21,15 @@ class Audit_mr_controller extends Module_controller
     
     public function admin()
     {
+        // Check if the user is authorized and has admin role
+        if (! $this->authorized()) {
+            die('Authenticate first.');
+        }
+
+        if (! $this->authorized('global')) {
+            die('You need to be admin');
+        }
+
         $obj = new View();
         $obj->view('audit_mr_admin', [], $this->module_path.'/views/');
     }
@@ -33,11 +42,14 @@ class Audit_mr_controller extends Module_controller
      **/
     public function get_data_admin()
     {
-        $obj = new View();
+        // Check if the user is authorized and has admin role
+        if (! $this->authorized()) {
+            jsonView(['error' => 'Authenticate first.']);
+            return;
+        }
 
-        // Check if the user is an admin user
-        if ($_SESSION['role'] !== "admin" || ! $this->authorized()){
-            $obj->view('json', array('msg' => 'Not authorized'));
+        if (! $this->authorized('global')) {
+            jsonView(['error' => 'You need to be admin']);
             return;
         }
         
